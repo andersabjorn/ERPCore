@@ -1,6 +1,46 @@
 ﻿using ERPCore.ConsoleUI.Data;
 using ERPCore.ConsoleUI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration; // Behövs för att läsa hemligheter
+using Microsoft.SemanticKernel;           // AI-hjärnan
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
+
+var config = new ConfigurationBuilder()
+    .AddUserSecrets<Program>()
+    .Build();
+
+string apiKey = config["OpenAI:ApiKey"];
+string modelId = "gpt-4o"; // Vi Använder GPT-4o
+
+// 2. Bygg hjärnan (Kernel)
+var builder = Kernel.CreateBuilder();
+builder.AddOpenAIChatCompletion(modelId, apiKey);
+var kernel = builder.Build();
+
+// 3. Testa att söga hej till AI
+Console.WriteLine("--- Starta AI-Motorn ---");
+Console.Write("Testar anslutning till OpenAI...");
+
+try
+{
+var chatService = kernel.GetRequiredService<IChatCompletionService>();
+var response = await chatService.GetChatMessageContentAsync("Svara med ett enda ord: Fungerar du?");
+
+Console.WriteLine("\n✅ Kontakt etablerad!");
+Console.WriteLine($"AI svarar: {response}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine("\n❌ Något gick fel med AI:n:");
+    Console.WriteLine(ex.Message);
+}
+
+Console.WriteLine("\nTryck på valfri knapp för att öppna huvudmenyn...");
+Console.ReadKey();
+
+// --- HÄR SLUTAR AI-KODEN ---
+
 
 bool keepRunning = true;
 
@@ -65,7 +105,7 @@ void ShowAllCustomers()
 
     using (var context = new AppDbContext())
     {
-        var customers = context.Customer.ToList();
+        var customers = context.Customers.ToList();
 
         foreach (var customer in customers)
         {
@@ -76,4 +116,5 @@ void ShowAllCustomers()
 
     Console.WriteLine("\nTryck på valfri knapp för att återgå");
     Console.ReadKey();
+    
 }

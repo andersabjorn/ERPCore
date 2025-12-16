@@ -19,7 +19,7 @@ public static class Database
                 PhoneNumber = phoneNumber,
             };
 
-            db.Customer.Add(newCustomer);
+            db.Customers.Add(newCustomer);
 
             db.SaveChanges();
         }

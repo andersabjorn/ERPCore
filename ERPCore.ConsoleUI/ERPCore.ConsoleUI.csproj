@@ -5,7 +5,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
+      <UserSecretsId>1d29e3fa-3d0b-41e2-b850-042f05923a41</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
       <Folder Include="Services\" />
@@ -19,6 +20,8 @@
       </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.1" />
+      <PackageReference Include="Microsoft.SemanticKernel" Version="1.68.0" />
     </ItemGroup>
 
     <ItemGroup>
