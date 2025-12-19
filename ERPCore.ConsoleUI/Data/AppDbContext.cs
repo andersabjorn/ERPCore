@@ -1,6 +1,6 @@
     using ERPCore.ConsoleUI.Models;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration; // Denna rad är ny!
+    using Microsoft.Extensions.Configuration; 
 
     namespace ERPCore.ConsoleUI.Data;
 
@@ -22,7 +22,7 @@
             // 2. Hämta texten som står under "DefaultConnection" i filen
             string connectionString = config.GetConnectionString("DefaultConnection");
 
-            // 3. Koppla upp mot databasen med den texten
+            // 3. Koppla upp mot databasen(Azure)  med den texten
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
