@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERPCore.ConsoleUI", "ERPCore.ConsoleUI\ERPCore.ConsoleUI.csproj", "{3DD6688E-786C-4EAE-A4DC-1EE0E4E7CDB0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8E58603C-AF96-4796-A3F3-E33002F33607}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{84D0D10D-81B9-4CC1-A574-6D70C308F142}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,8 @@ Global
 		{3DD6688E-786C-4EAE-A4DC-1EE0E4E7CDB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DD6688E-786C-4EAE-A4DC-1EE0E4E7CDB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DD6688E-786C-4EAE-A4DC-1EE0E4E7CDB0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{84D0D10D-81B9-4CC1-A574-6D70C308F142} = {8E58603C-AF96-4796-A3F3-E33002F33607}
 	EndGlobalSection
 EndGlobal
