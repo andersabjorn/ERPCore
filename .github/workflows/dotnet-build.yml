@@ -11,11 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    
+    # HÄR ÄR ÄNDRINGEN: Vi säger exakt vad som ska återställas
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ERPCore.sln
+
+    # OCH HÄR: Vi säger exakt vad som ska byggas
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build ERPCore.sln --no-restore
