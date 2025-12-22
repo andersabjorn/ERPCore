@@ -16,18 +16,19 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-
+      
+      # HÄR VAR FELET: Nu pekar vi specifikt på ERPCore.sln
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ERPCore.sln
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build ERPCore.sln --no-restore --configuration Release
 
       - name: Test
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: dotnet test ERPCore.sln --no-build --configuration Release --verbosity normal
 
       - name: Publish
-        run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish ERPCore.sln --configuration Release --output ./publish
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
