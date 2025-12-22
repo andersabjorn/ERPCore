@@ -1,28 +1,38 @@
-name: Bygg och Kontrollera
+name: Build and Deploy to Azure
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    
-    # HÄR ÄR ÄNDRINGEN: Vi säger exakt vad som ska återställas
-    - name: Restore dependencies
-      run: dotnet restore ERPCore.sln
 
-    # OCH HÄR: Vi säger exakt vad som ska byggas
-    - name: Build
-      run: dotnet build ERPCore.sln --no-restore
-    - name: Run Tests
-      run: dotnet test ERPCore.sln --no-build --verbosity normal
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./publish
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'app-erp-5qbpn5srrsxd6'
+          slot-name: 'production'
+          package: './publish'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
