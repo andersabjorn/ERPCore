@@ -1,8 +1,10 @@
 ﻿using ERPCore.ConsoleUI.Data;
+using ERPCore.ConsoleUI.Infrastructure.Repositories; 
+using ERPCore.ConsoleUI.Interfaces;                
 using ERPCore.ConsoleUI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration; // Behövs för att läsa hemligheter
-using Microsoft.SemanticKernel;           // AI-hjärnan
+using Microsoft.Extensions.Configuration;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 
@@ -11,24 +13,23 @@ var config = new ConfigurationBuilder()
     .Build();
 
 string apiKey = config["OpenAI:ApiKey"];
-string modelId = "gpt-4o"; // Vi Använder GPT-4o
+string modelId = "gpt-4o";
 
-// 2. Bygg hjärnan (Kernel)
+// --- START AI KOD ---
 var builder = Kernel.CreateBuilder();
 builder.AddOpenAIChatCompletion(modelId, apiKey);
 var kernel = builder.Build();
 
-// 3. Testa att söga hej till AI
 Console.WriteLine("--- Starta AI-Motorn ---");
 Console.Write("Testar anslutning till OpenAI...");
 
 try
 {
-var chatService = kernel.GetRequiredService<IChatCompletionService>();
-var response = await chatService.GetChatMessageContentAsync("Svara med ett enda ord: Fungerar du?");
+    var chatService = kernel.GetRequiredService<IChatCompletionService>();
+    var response = await chatService.GetChatMessageContentAsync("Svara med ett enda ord: Fungerar du?");
 
-Console.WriteLine("\n✅ Kontakt etablerad!");
-Console.WriteLine($"AI svarar: {response}");
+    Console.WriteLine("\n✅ Kontakt etablerad!");
+    Console.WriteLine($"AI svarar: {response}");
 }
 catch (Exception ex)
 {
@@ -38,8 +39,7 @@ catch (Exception ex)
 
 Console.WriteLine("\nTryck på valfri knapp för att öppna huvudmenyn...");
 Console.ReadKey();
-
-// --- HÄR SLUTAR AI-KODEN ---
+// --- SLUT AI KOD ---
 
 
 bool keepRunning = true;
@@ -48,8 +48,9 @@ while (keepRunning)
 {
     Console.Clear();
 
-    Console.WriteLine("1. Visa Kunder");
+    Console.WriteLine("1. Visa Kunder (Gammalt sätt)");
     Console.WriteLine("2. Lägg till ny kund");
+    Console.WriteLine("3. Visa Produkter (Repository Pattern - NYTT!)");
     Console.WriteLine("0. Avsluta");
 
     Console.Write("Ditt val: ");
@@ -61,31 +62,30 @@ while (keepRunning)
             ShowAllCustomers();
             break;
         case "2":
-        {
+            // Logik för att lägga till kund
             Console.Clear();
             Console.WriteLine("--- Lägg till ny kund ---");
-
             Console.Write("Förnamn: ");
             string fName = Console.ReadLine();
-
             Console.Write("Efternamn: ");
             string lName = Console.ReadLine();
-
             Console.Write("E-mail: ");
             string email = Console.ReadLine();
-
             Console.Write("Telefon: ");
             string phoneNumber = Console.ReadLine();
 
             Console.WriteLine("Sparar till databasen...");
-            Database.AddCustomer(fName, lName, email, phoneNumber);
+            // OBS: Jag antar att du har kvar din Database-klass, annars byt till context här.
+            Database.AddCustomer(fName, lName, email, phoneNumber); 
 
             Console.WriteLine("Klart! Kunden är tillagd.");
-            Console.WriteLine("Tryck å valfri knapp för att återgå.");
+            Console.WriteLine("Tryck på valfri knapp för att återgå.");
             Console.ReadKey();
             break;
-        }
 
+        case "3":                
+            ShowAllProducts(); // Här kör vi din nya kod!
+            break;
 
         case "0":
             keepRunning = false;
@@ -97,6 +97,8 @@ while (keepRunning)
             break;
     }
 }
+
+// --- METODER LIGGER HÄR NERE, PRYDLIGT SEPARERADE ---
 
 void ShowAllCustomers()
 {
@@ -110,11 +112,31 @@ void ShowAllCustomers()
         foreach (var customer in customers)
         {
             Console.WriteLine($"ID: {customer.Id} Name: {customer.FirstName} {customer.LastName}");
-            
         }
     }
-
+    
     Console.WriteLine("\nTryck på valfri knapp för att återgå");
     Console.ReadKey();
+}
+
+void ShowAllProducts()
+{
+    Console.Clear();
+    Console.WriteLine("---- Produktlista (Från Repository) ----");
+
+    using (var context = new AppDbContext())
+    {
+        // Här använder Lagerchef!
+        IProductRepository repo = new ProductRepository(context);
+        
+        var products = repo.GetAll();
+
+        foreach (var p in products)
+        {
+            Console.WriteLine($"ProduktID: {p.Id} - {p.Name}");
+        }
+    }
     
+    Console.WriteLine("\nTryck på valfri knapp för att återgå");
+    Console.ReadKey();
 }
