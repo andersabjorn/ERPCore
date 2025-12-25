@@ -47,7 +47,7 @@ while (keepRunning)
 {
     Console.Clear();
 
-Console.WriteLine("\n🎅 Systemet online. God Jul Anders! Dags att bygga framtiden. 🎅\n");
+    Console.WriteLine("\n🎄 Juldagen 2025. Disciplinen vilar inte. Mot nya mål! 🎄\n");    
     Console.WriteLine("1. Visa Kunder (Gammalt sätt)");
     Console.WriteLine("2. Lägg till ny kund");
     Console.WriteLine("3. Visa Produkter (Repository Pattern - NYTT!)");
