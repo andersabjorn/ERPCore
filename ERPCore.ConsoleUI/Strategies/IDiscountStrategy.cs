@@ -1,6 +1,7 @@
-namespace ERPCore.ConsoleUI.Strategies;
-
-public interface IDiscountStrategy
+namespace ERPCore.ConsoleUI.Strategies
 {
-    decimal CalculateFinalPrice(decimal OriginalPrice);
+    public interface IDiscountStrategy
+    {
+        decimal CalculateFinalPrice(decimal totalAmount);
+    }
 }

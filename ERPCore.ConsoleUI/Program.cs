@@ -2,56 +2,41 @@
 using ERPCore.ConsoleUI.Infrastructure.Repositories; 
 using ERPCore.ConsoleUI.Interfaces;                
 using ERPCore.ConsoleUI.Models;
+using ERPCore.ConsoleUI.Strategies; // <--- Viktig! För att hitta strategierna
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 
+// --- KONFIGURATION ---
 var config = new ConfigurationBuilder()
     .AddUserSecrets<Program>()
     .Build();
 
-string apiKey = config["OpenAI:ApiKey"];
-string modelId = "gpt-4o";
-
-// --- START AI KOD ---
-var builder = Kernel.CreateBuilder();
-builder.AddOpenAIChatCompletion(modelId, apiKey);
-var kernel = builder.Build();
-
-Console.WriteLine("--- Starta AI-Motorn ---");
-Console.Write("Testar anslutning till OpenAI...");
-
-try
+using (var context = new AppDbContext())
 {
-    var chatService = kernel.GetRequiredService<IChatCompletionService>();
-    var response = await chatService.GetChatMessageContentAsync("Svara med ett enda ord: Fungerar du?");
-
-    Console.WriteLine("\n✅ Kontakt etablerad!");
-    Console.WriteLine($"AI svarar: {response}");
+    Console.WriteLine("🔨 Nollställer databasen (Reset)...");
+    
+    // 1. RADERA allt gammalt skräp (The Nuke)
+    context.Database.EnsureDeleted(); 
+    
+    // 2. Skapa nytt fräscht hus
+    context.Database.EnsureCreated(); 
+    
+    // 3. Fyll med data (Kunder OCH Produkter)
+    DataSeeder.SeedData(context); 
 }
-catch (Exception ex)
-{
-    Console.WriteLine("\n❌ Något gick fel med AI:n:");
-    Console.WriteLine(ex.Message);
-}
-
-Console.WriteLine("\nTryck på valfri knapp för att öppna huvudmenyn...");
-Console.ReadKey();
-// --- SLUT AI KOD ---
-
 
 bool keepRunning = true;
 while (keepRunning)
 {
     Console.Clear();
-
-    Console.WriteLine("\n🎄 Juldagen 2025. Disciplinen vilar inte. Mot nya mål! 🎄\n");    
-    Console.WriteLine("1. Visa Kunder (Gammalt sätt)");
-    Console.WriteLine("2. Lägg till ny kund");
-    Console.WriteLine("3. Visa Produkter (Repository Pattern - NYTT!)");
+    Console.WriteLine("==================================================");
+    Console.WriteLine("   ERP CORE - CONSOLE PROTOTYPE (FINAL BUILD)     ");
+    Console.WriteLine("==================================================");
+    Console.WriteLine("1. Visa Kunder (Database Class - Old School)");
+    Console.WriteLine("2. Visa Produkter (Repository Pattern - Architecture)");
+    Console.WriteLine("3. Skapa en VIP-Order (Strategy Pattern - Advanced)");
     Console.WriteLine("0. Avsluta");
+    Console.WriteLine("--------------------------------------------------");
 
     Console.Write("Ditt val: ");
     string choice = Console.ReadLine();
@@ -61,30 +46,13 @@ while (keepRunning)
         case "1":
             ShowAllCustomers();
             break;
-        case "2":
-            // Logik för att lägga till kund
-            Console.Clear();
-            Console.WriteLine("--- Lägg till ny kund ---");
-            Console.Write("Förnamn: ");
-            string fName = Console.ReadLine();
-            Console.Write("Efternamn: ");
-            string lName = Console.ReadLine();
-            Console.Write("E-mail: ");
-            string email = Console.ReadLine();
-            Console.Write("Telefon: ");
-            string phoneNumber = Console.ReadLine();
 
-            Console.WriteLine("Sparar till databasen...");
-            // OBS: Jag antar att du har kvar din Database-klass, annars byt till context här.
-            Database.AddCustomer(fName, lName, email, phoneNumber); 
-
-            Console.WriteLine("Klart! Kunden är tillagd.");
-            Console.WriteLine("Tryck på valfri knapp för att återgå.");
-            Console.ReadKey();
+        case "2":                
+            ShowAllProducts(); 
             break;
 
-        case "3":                
-            ShowAllProducts(); // Här kör vi din nya kod!
+        case "3":
+            CreateTestOrder(); // Här testar vi din strategi!
             break;
 
         case "0":
@@ -92,51 +60,75 @@ while (keepRunning)
             break;
         
         default:
-            Console.WriteLine("Ogiltigt val, försök igen.");
+            Console.WriteLine("Ogiltigt val.");
             Console.ReadKey();
             break;
     }
 }
 
-// --- METODER LIGGER HÄR NERE, PRYDLIGT SEPARERADE ---
+// --- METODER ---
 
 void ShowAllCustomers()
 {
     Console.Clear();
     Console.WriteLine("---- Kundlista ----");
-
     using (var context = new AppDbContext())
     {
         var customers = context.Customers.ToList();
-
-        foreach (var customer in customers)
+        foreach (var c in customers)
         {
-            Console.WriteLine($"ID: {customer.Id} Name: {customer.FirstName} {customer.LastName}");
+            Console.WriteLine($"ID: {c.Id} - {c.FirstName} {c.LastName}");
         }
     }
-    
-    Console.WriteLine("\nTryck på valfri knapp för att återgå");
+    Console.WriteLine("\nTryck valfri knapp...");
     Console.ReadKey();
 }
 
 void ShowAllProducts()
 {
     Console.Clear();
-    Console.WriteLine("---- Produktlista (Från Repository) ----");
-
+    Console.WriteLine("---- Produktlista (Repository) ----");
     using (var context = new AppDbContext())
     {
-        // Här använder Lagerchef!
+        // Här bevisar du att du fattar Repository Pattern
         IProductRepository repo = new ProductRepository(context);
-        
         var products = repo.GetAll();
 
         foreach (var p in products)
         {
-            Console.WriteLine($"ProduktID: {p.Id} - {p.Name}");
+            Console.WriteLine($"{p.Id}: {p.Name} - {p.Price:C}");
         }
     }
+    Console.WriteLine("\nTryck valfri knapp...");
+    Console.ReadKey();
+}
+
+void CreateTestOrder()
+{
+    Console.Clear();
+    Console.WriteLine("---- Strategy Pattern Test ----");
+
+    // 1. Välj strategi (Här "injicerar" vi beroendet manuellt)
+    Console.WriteLine("Applicerar VIP-strategi (10% rabatt)...");
+    IDiscountStrategy vipStrategy = new VipDiscountStrategy();
+
+    // 2. Skapa ordern med strategin
+    SalesOrder order = new SalesOrder(vipStrategy);
     
-    Console.WriteLine("\nTryck på valfri knapp för att återgå");
+    // 3. Lägg till lite "låtsas-produkter" (bara för att få en summa)
+    order.TotalAmount = 1000m; // Vi säger att vi köpt för 1000 kr
+
+    // 4. Räkna ut priset
+    decimal finalPrice = order.GetFinalPrice();
+
+    Console.WriteLine($"Ordervärde: {order.TotalAmount:C}");
+    Console.WriteLine($"Att betala: {finalPrice:C}");
+    
+    if (finalPrice < 1000)
+    {
+        Console.WriteLine("✅ Succé! Rabatten drogs av korrekt.");
+    }
+
+    Console.WriteLine("\nTryck valfri knapp...");
     Console.ReadKey();
 }
