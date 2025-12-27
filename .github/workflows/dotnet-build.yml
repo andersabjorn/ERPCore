@@ -1,4 +1,4 @@
-name: Build and Deploy to Azure
+name: Build and Test (No Deploy)
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,6 @@ jobs:
         with:
           dotnet-version: 8.0.x
       
-      # HÄR VAR FELET: Nu pekar vi specifikt på ERPCore.sln
       - name: Restore dependencies
         run: dotnet restore ERPCore.sln
 
@@ -27,13 +26,17 @@ jobs:
       - name: Test
         run: dotnet test ERPCore.sln --no-build --configuration Release --verbosity normal
 
-      - name: Publish
-        run: dotnet publish ERPCore.sln --configuration Release --output ./publish
+      # --- HÄR STANNAR VI! 🛑 ---
+      # Vi pausar deployment eftersom detta är en Konsol-app och inte ett Web API.
+      # Koden nedan körs inte, vilket gör att pipelinen blir GRÖN.
 
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'app-erp-5qbpn5srrsxd6'
-          slot-name: 'production'
-          package: './publish'
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+      # - name: Publish
+      #   run: dotnet publish ERPCore.sln --configuration Release --output ./publish
+
+      # - name: Deploy to Azure Web App
+      #   uses: azure/webapps-deploy@v3
+      #   with:
+      #     app-name: 'app-erp-5qbpn5srrsxd6'
+      #     slot-name: 'production'
+      #     package: './publish'
+      #     publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
