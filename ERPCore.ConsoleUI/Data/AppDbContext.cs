@@ -21,13 +21,13 @@ namespace ERPCore.ConsoleUI.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Om vi inte redan har fått inställningar via Dependency Injection...
             if (!optionsBuilder.IsConfigured)
             {
-                // ...så använder vi den här hårdkodade anslutningen direkt!
-                // Detta funkar alltid för lokal utveckling.
+                // Read connection string from environment variable first (production/CI),
+                // then fall back to local development default.
                 var connectionString =
-                    "Server=(localdb)\\mssqllocaldb;Database=ERPCoreDb;Trusted_Connection=True;MultipleActiveResultSets=true";
+                    Environment.GetEnvironmentVariable("ERPCORE_CONNECTION_STRING")
+                    ?? "Server=(localdb)\\mssqllocaldb;Database=ERPCoreDb;Trusted_Connection=True;MultipleActiveResultSets=true";
 
                 optionsBuilder.UseSqlServer(connectionString);
             }

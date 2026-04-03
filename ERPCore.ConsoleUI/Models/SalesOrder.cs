@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using ERPCore.ConsoleUI.Strategies;
-using System;
-using System.Collections.Generic;
 using ERPCore.ConsoleUI.Strategies;
 
 namespace ERPCore.ConsoleUI.Models
