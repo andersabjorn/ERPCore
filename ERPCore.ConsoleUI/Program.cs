@@ -9,7 +9,13 @@ using Microsoft.Extensions.Configuration;
 // --- KONFIGURATION ---
 var config = new ConfigurationBuilder()
     .AddUserSecrets<Program>()
+    .AddEnvironmentVariables()
     .Build();
+
+// Sätt anslutningssträngen som miljövariabel så att AppDbContext kan läsa den.
+var connectionString = config["ConnectionStrings:DefaultConnection"];
+if (!string.IsNullOrEmpty(connectionString))
+    Environment.SetEnvironmentVariable("ERPCORE_CONNECTION_STRING", connectionString);
 
 using (var context = new AppDbContext())
 {
