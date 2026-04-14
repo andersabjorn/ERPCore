@@ -6,11 +6,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ERPCore.ConsoleUI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedOrderTables : Migration
+    public partial class InitialCreateWithIndexes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
@@ -28,19 +45,20 @@ namespace ERPCore.ConsoleUI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SalesOrders",
+                name: "SalesOrder",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false)
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SalesOrders", x => x.Id);
+                    table.PrimaryKey("PK_SalesOrder", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SalesOrders_Customers_CustomerId",
+                        name: "FK_SalesOrder_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
@@ -48,7 +66,7 @@ namespace ERPCore.ConsoleUI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderRows",
+                name: "OrderRow",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -60,48 +78,61 @@ namespace ERPCore.ConsoleUI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderRows", x => x.Id);
+                    table.PrimaryKey("PK_OrderRow", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OrderRows_Products_ProductId",
+                        name: "FK_OrderRow_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderRows_SalesOrders_SalesOrderId",
+                        name: "FK_OrderRow_SalesOrder_SalesOrderId",
                         column: x => x.SalesOrderId,
-                        principalTable: "SalesOrders",
+                        principalTable: "SalesOrder",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderRows_ProductId",
-                table: "OrderRows",
+                name: "IX_Customers_CustomerNumber",
+                table: "Customers",
+                column: "CustomerNumber");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderRow_ProductId",
+                table: "OrderRow",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderRows_SalesOrderId",
-                table: "OrderRows",
+                name: "IX_OrderRow_SalesOrderId",
+                table: "OrderRow",
                 column: "SalesOrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SalesOrders_CustomerId",
-                table: "SalesOrders",
+                name: "IX_SalesOrder_CustomerId",
+                table: "SalesOrder",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SalesOrder_OrderDate",
+                table: "SalesOrder",
+                column: "OrderDate");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "OrderRows");
+                name: "OrderRow");
 
             migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "SalesOrders");
+                name: "SalesOrder");
+
+            migrationBuilder.DropTable(
+                name: "Customers");
         }
     }
 }

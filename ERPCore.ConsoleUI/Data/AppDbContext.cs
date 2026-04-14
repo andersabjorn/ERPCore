@@ -32,5 +32,16 @@ namespace ERPCore.ConsoleUI.Data
                 optionsBuilder.UseSqlServer(connectionString);
             }
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Index på CustomerNumber - söks ofta
+            modelBuilder.Entity<Customer>()
+                .HasIndex(c => c.CustomerNumber);
+
+            // Index på OrderDate - för datumfiltrering  
+            modelBuilder.Entity<SalesOrder>()
+                .HasIndex(o => o.OrderDate);
+        }
     }
 }

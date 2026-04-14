@@ -14,6 +14,8 @@ namespace ERPCore.ConsoleUI.Models
 
         private readonly IDiscountStrategy _discountStrategy;
         
+        public SalesOrder() { }
+        
         public SalesOrder(IDiscountStrategy strategy)
         {
             _discountStrategy = strategy;

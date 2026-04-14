@@ -32,7 +32,7 @@ namespace ERPCore.ConsoleUI.Migrations
 
                     b.Property<string>("CustomerNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -52,7 +52,9 @@ namespace ERPCore.ConsoleUI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customer");
+                    b.HasIndex("CustomerNumber");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("ERPCore.ConsoleUI.Models.OrderRow", b =>
@@ -81,7 +83,7 @@ namespace ERPCore.ConsoleUI.Migrations
 
                     b.HasIndex("SalesOrderId");
 
-                    b.ToTable("OrderRows");
+                    b.ToTable("OrderRow");
                 });
 
             modelBuilder.Entity("ERPCore.ConsoleUI.Models.Product", b =>
@@ -125,11 +127,16 @@ namespace ERPCore.ConsoleUI.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("SalesOrders");
+                    b.HasIndex("OrderDate");
+
+                    b.ToTable("SalesOrder");
                 });
 
             modelBuilder.Entity("ERPCore.ConsoleUI.Models.OrderRow", b =>

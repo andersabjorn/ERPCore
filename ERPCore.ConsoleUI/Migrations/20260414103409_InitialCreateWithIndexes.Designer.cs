@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ERPCore.ConsoleUI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251212175417_AddedOrderTables")]
-    partial class AddedOrderTables
+    [Migration("20260414103409_InitialCreateWithIndexes")]
+    partial class InitialCreateWithIndexes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,21 +35,27 @@ namespace ERPCore.ConsoleUI.Migrations
 
                     b.Property<string>("CustomerNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNUmber")
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomerNumber");
 
                     b.ToTable("Customers");
                 });
@@ -80,7 +86,7 @@ namespace ERPCore.ConsoleUI.Migrations
 
                     b.HasIndex("SalesOrderId");
 
-                    b.ToTable("OrderRows");
+                    b.ToTable("OrderRow");
                 });
 
             modelBuilder.Entity("ERPCore.ConsoleUI.Models.Product", b =>
@@ -124,11 +130,16 @@ namespace ERPCore.ConsoleUI.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("SalesOrders");
+                    b.HasIndex("OrderDate");
+
+                    b.ToTable("SalesOrder");
                 });
 
             modelBuilder.Entity("ERPCore.ConsoleUI.Models.OrderRow", b =>
